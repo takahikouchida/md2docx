@@ -21,7 +21,8 @@ RUN apk add --no-cache \
       python3 \
     && npm install -g @mermaid-js/mermaid-cli
 
-COPY md2docx.sh /usr/local/bin/md2docx.sh
+COPY scripts/md2docx.sh /usr/local/bin/md2docx.sh
+COPY scripts/format_docx_tables.py /usr/local/bin/format_docx_tables.py
 RUN chmod +x /usr/local/bin/md2docx.sh
 
 ENTRYPOINT ["/usr/local/bin/md2docx.sh"]

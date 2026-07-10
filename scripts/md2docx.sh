@@ -3,7 +3,7 @@ set -eu
 
 INPUT="${1:-}"
 OUTPUT="${2:-}"
-REFERENCE_DOC="${REFERENCE_DOC:-/tools/reference_table_headerbold.docx}"
+REFERENCE_DOC="${REFERENCE_DOC:-/tools/templates/reference_table_headerbold.docx}"
 
 if [ -z "$INPUT" ]; then
   echo "Usage: docker compose run --rm md2docx input.md [output.docx]"
@@ -116,6 +116,8 @@ pandoc "$PROCESSED_MD" \
   --reference-doc="$REFERENCE_DOC" \
   --from=markdown+pipe_tables \
   --standalone
+
+python3 /usr/local/bin/format_docx_tables.py "$OUTPUT_PATH"
 #  --toc \
 #  --toc-depth=2 \
 #  --metadata toc-title="目次"
