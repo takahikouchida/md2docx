@@ -1,0 +1,10 @@
+services:
+  md2docx:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    working_dir: /input
+    volumes:
+      - ./input:/input:ro
+      - ./output:/output
+      - .:/tools:ro
