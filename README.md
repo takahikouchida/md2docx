@@ -21,6 +21,19 @@ md2docx/
 
 `input/` にMarkdownファイルを置きます。
 
+### ダブルクリックで実行する
+
+- macOS: `run-md2docx.command` をダブルクリック
+- Windows: `run-md2docx.bat` をダブルクリック
+
+Docker Desktopを起動した状態で実行してください。必要なDockerイメージをビルドし、`input/` 配下のすべてのMarkdownを変換します。結果は `output/` に保存され、既存出力は通番バックアップへ退避されます。
+
+macOSで初回実行時に権限エラーが表示された場合は、ターミナルで次を一度実行してください。
+
+```sh
+chmod +x run-md2docx.command
+```
+
 ### すべて変換する
 
 ファイル名を省略すると、`input/` 配下のすべてのMarkdownファイルを表示して一括変換します。
