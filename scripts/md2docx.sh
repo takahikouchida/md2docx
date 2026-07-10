@@ -5,11 +5,51 @@ INPUT="${1:-}"
 OUTPUT="${2:-}"
 REFERENCE_DOC="${REFERENCE_DOC:-/tools/templates/reference_table_headerbold.docx}"
 
+next_backup_dir() {
+  number=1
+  while :; do
+    candidate="$(printf '/output/backups/backup-%03d' "$number")"
+    if [ ! -e "$candidate" ]; then
+      printf '%s\n' "$candidate"
+      return
+    fi
+    number=$((number + 1))
+  done
+}
+
+backup_existing_output() {
+  if [ ! -f "$OUTPUT_PATH" ]; then
+    return
+  fi
+
+  backup_path="$BACKUP_DIR/$OUTPUT"
+  mkdir -p "$(dirname "$backup_path")"
+  mv "$OUTPUT_PATH" "$backup_path"
+  echo "Existing output backed up: ${backup_path#/output/}"
+}
+
 if [ -z "$INPUT" ]; then
-  echo "Usage: docker compose run --rm md2docx input.md [output.docx]"
-  echo "  Source: ./input/input.md"
-  echo "  Output: ./output/output.docx"
-  exit 1
+  FILE_COUNT="$(find /input -type f -name '*.md' | wc -l | tr -d ' ')"
+
+  if [ "$FILE_COUNT" -eq 0 ]; then
+    echo "No Markdown files found in ./input"
+    exit 0
+  fi
+
+  echo "Converting all Markdown files:"
+  find /input -type f -name '*.md' -print | sed 's#^/input/#  - #'
+  echo "Total: $FILE_COUNT file(s)"
+
+  BACKUP_DIR="${BACKUP_DIR:-$(next_backup_dir)}"
+  export BACKUP_DIR
+
+  find /input -type f -name '*.md' -exec sh -c '
+    for path do
+      relative=${path#/input/}
+      /usr/local/bin/md2docx.sh "$relative"
+    done
+  ' sh {} +
+  exit 0
 fi
 
 if [ -z "$OUTPUT" ]; then
@@ -19,6 +59,7 @@ fi
 INPUT_PATH="/input/$INPUT"
 OUTPUT_PATH="/output/$OUTPUT"
 OUTPUT_DIR="$(dirname "$OUTPUT_PATH")"
+BACKUP_DIR="${BACKUP_DIR:-$(next_backup_dir)}"
 
 if [ ! -f "$INPUT_PATH" ]; then
   echo "Input file not found: $INPUT_PATH"
@@ -30,6 +71,7 @@ if [ ! -f "$REFERENCE_DOC" ]; then
   exit 1
 fi
 
+backup_existing_output
 mkdir -p "$OUTPUT_DIR"
 
 TMP_DIR="$(mktemp -d)"

@@ -19,7 +19,29 @@ md2docx/
 
 ## 使い方
 
-`input/` にMarkdownファイルを置き、次を実行します。
+`input/` にMarkdownファイルを置きます。
+
+### すべて変換する
+
+ファイル名を省略すると、`input/` 配下のすべてのMarkdownファイルを表示して一括変換します。
+
+```sh
+docker compose run --rm md2docx
+```
+
+既存の出力ファイルがある場合は上書きせず、実行単位で通番を付けたディレクトリへ退避します。一括変換時のバックアップは同じディレクトリにまとめられます。
+
+```text
+output/
+├── report.docx
+└── backups/
+    ├── backup-001/
+    │   └── report.docx
+    └── backup-002/
+        └── report.docx
+```
+
+### 1ファイルだけ変換する
 
 ```sh
 docker compose run --rm md2docx sample.md
